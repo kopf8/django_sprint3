@@ -15,7 +15,10 @@ class PostQuerySet(models.QuerySet):
         )
 
     def published(self):
-        return self.filter(is_published=True, category__is_published=True)
+        return self.filter(
+            is_published=True,
+            category__is_published=True,
+        )
 
 
 class PublishedPostManager(models.Manager):
@@ -28,7 +31,7 @@ class PublishedPostManager(models.Manager):
 
 
 class Category(models.Model):
-    objects = None
+    objects = PostQuerySet.as_manager()
     title = models.CharField(
         max_length=settings.MAX_LENGTH,
         verbose_name='Заголовок'
