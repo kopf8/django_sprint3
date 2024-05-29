@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+POSTS_ON_PAGE = 5
+MAX_LENGTH = 256
 
 # Application definition
 
