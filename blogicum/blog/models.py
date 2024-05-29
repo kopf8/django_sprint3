@@ -9,7 +9,10 @@ User = get_user_model()
 class PostQuerySet(models.QuerySet):
 
     def with_related_data(self):
-        return self.select_related('author', 'location', 'category').filter(pub_date__lte=timezone.now())
+        return (
+            self.select_related('author', 'location', 'category')
+            .filter(pub_date__lte=timezone.now())
+        )
 
     def published(self):
         return self.filter(is_published=True, category__is_published=True)
@@ -26,7 +29,10 @@ class PublishedPostManager(models.Manager):
 
 class Category(models.Model):
     objects = None
-    title = models.CharField(max_length=settings.MAX_LENGTH, verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=settings.MAX_LENGTH,
+        verbose_name='Заголовок'
+    )
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
         unique=True,
@@ -55,7 +61,10 @@ class Category(models.Model):
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=settings.MAX_LENGTH, verbose_name='Название места')
+    name = models.CharField(
+        max_length=settings.MAX_LENGTH,
+        verbose_name='Название места'
+    )
     is_published = models.BooleanField(
         default=True,
         verbose_name='Опубликовано',
@@ -77,7 +86,10 @@ class Location(models.Model):
 class Post(models.Model):
     objects = PostQuerySet.as_manager()
     published = PublishedPostManager()
-    title = models.CharField(max_length=settings.MAX_LENGTH, verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=settings.MAX_LENGTH,
+        verbose_name='Заголовок'
+    )
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
