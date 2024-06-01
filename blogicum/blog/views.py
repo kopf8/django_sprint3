@@ -18,6 +18,7 @@ def category_posts(request, category_slug):
     category = get_object_or_404(
         Category.objects.filter(is_published=True), slug=category_slug
     )
-    post_list = category.posts(manager='published').all
+    post_list = category.posts(manager='published').all()
+
     return render(request, 'blog/category.html',
                   {'category': category, 'post_list': post_list})
