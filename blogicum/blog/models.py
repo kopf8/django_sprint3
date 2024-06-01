@@ -6,32 +6,8 @@ from django.utils import timezone
 User = get_user_model()
 
 
-class PostQuerySet(models.QuerySet):
-
-    def with_related_data(self):
-        return (
-            self.select_related('author', 'location', 'category')
-            .filter(pub_date__lte=timezone.now())
-        )
-
-    def published(self):
-        return self.filter(
-            is_published=True,
-            category__is_published=True,
-        )
-
-
-class PublishedPostManager(models.Manager):
-    def get_queryset(self) -> PostQuerySet:
-        return (
-            PostQuerySet(self.model)
-            .with_related_data()
-            .published()
-        )
-
-
 class Category(models.Model):
-    objects = PostQuerySet.as_manager()
+
     title = models.CharField(
         max_length=settings.MAX_LENGTH,
         verbose_name='Заголовок'
@@ -86,9 +62,33 @@ class Location(models.Model):
         return self.name
 
 
+class PostQuerySet(models.QuerySet):
+
+    def with_related_data(self):
+        return (
+            self.select_related('author', 'location', 'category')
+            .all()
+        )
+
+    def published(self):
+        return self.filter(
+            is_published=True,
+            category__is_published=True,
+            pub_date__lte=timezone.now()
+        )
+
+
+class PublishedPostManager(models.Manager):
+    def get_queryset(self) -> PostQuerySet:
+        return (
+            PostQuerySet(self.model)
+            .with_related_data()
+            .published()
+        )
+
+
 class Post(models.Model):
-    objects = PostQuerySet.as_manager()
-    published = PublishedPostManager()
+
     title = models.CharField(
         max_length=settings.MAX_LENGTH,
         verbose_name='Заголовок'
@@ -128,6 +128,9 @@ class Post(models.Model):
         auto_now_add=True,
         verbose_name='Добавлено'
     )
+
+    objects = PostQuerySet.as_manager()
+    published = PublishedPostManager()
 
     class Meta:
         verbose_name = 'публикация'
